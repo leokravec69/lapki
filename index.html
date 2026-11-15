@@ -142,6 +142,18 @@ svg.chart{width:100%;height:150px}
 .photopick{width:110px;height:110px;border-radius:50%;margin:6px auto;background:#fff;border:3px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--muted);overflow:hidden;text-align:center}
 .photopick img{width:100%;height:100%;object-fit:cover}
 </style>
+<!-- Yandex.Metrika -->
+<script>
+window.YM_ID=114259992;
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();
+for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
+ym(window.YM_ID,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:false,
+  params:{mode:(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone?'app':'browser'}});
+function goal(n){try{ym(window.YM_ID,'reachGoal',n)}catch(e){}}
+</script>
+<!-- /Yandex.Metrika -->
 </head>
 <body>
 <header><div class="pets" id="pets"></div></header>
@@ -261,7 +273,7 @@ function onbV(){
     <div class="actions"><button class="btn ghost" onclick="OB.step=0;render()">Назад</button><button class="btn" onclick="obFinish()">Готово 🐾</button></div></div>`;
 }
 function obKeep(){const g=id=>document.getElementById(id);if(!g('ob-name'))return;Object.assign(OB.pet,{name:g('ob-name').value.trim(),breed:g('ob-breed').value.trim(),sex:g('ob-sex').value,birth:g('ob-birth').value})}
-function obFinish(){obKeep();if(!OB.pet.name){toast('Как зовут питомца?');return}S.pets.push(OB.pet);S.current=OB.pet.id;save();tab='home';render();voice(2);toast('Привет, '+OB.pet.name+'! 🐾')}
+function obFinish(){obKeep();if(!OB.pet.name){toast('Как зовут питомца?');return}goal('pet_added');S.pets.push(OB.pet);S.current=OB.pet.id;save();tab='home';render();voice(2);toast('Привет, '+OB.pet.name+'! 🐾')}
 
 /* --- Главная с виджетами --- */
 function homeV(){
@@ -375,6 +387,7 @@ function petV(){const p=P();const kv=(k,v)=>v?`<div class="kv"><span>${k}</span>
     <div class="actions"><button class="btn sec" onclick="backup()">Сохранить копию</button><button class="btn ghost" onclick="document.getElementById('fileIn').click()">Загрузить</button></div></div>
   <button class="btn ghost" style="color:var(--red);margin:6px 0" onclick="delPet()">Удалить питомца «${esc(p.name)}»</button>
   <a href="help.html" class="btn sec" style="display:block;text-align:center;text-decoration:none;margin:6px 0">📖 Инструкция</a>
+  <a href="https://t.me/praktikiai" class="btn ghost" style="display:block;text-align:center;text-decoration:none;margin:6px 0">✈️ Новости в Telegram</a>
   <p class="note" style="text-align:center;padding:4px 20px">Интервалы в шаблонах ориентировочные — схему прививок и обработок уточняйте у ветеринара.</p>`}
 function delPet(){const p=P();if(!confirm('Удалить '+p.name+' и все записи? Это нельзя отменить.'))return;S.pets=S.pets.filter(x=>x.id!==p.id);S.current=S.pets[0]?.id||null;save();OB={step:0};tab='home';render()}
 
@@ -408,7 +421,7 @@ function saveF(doneNow){const p=P();keepInputs();const stop=document.getElementB
   else{if(F.status==='plan')p.plans.push({...base,id:uid()});else p.records.push({...base,id:uid()})}
   save();closeSheet();render();toast(F.status==='plan'&&F.mode==='new'?'Запланировано 🗓':'Сохранено ✓')}
 function delF(){if(!confirm('Удалить запись?'))return;const p=P();p.records=p.records.filter(r=>r.id!==F.id);p.plans=p.plans.filter(x=>x.id!==F.id);save();closeSheet();render()}
-function markDone(id){const p=P();const u=upcoming().find(x=>x.id===id);if(!u)return;const day=today();
+function markDone(id){goal('done_click');const p=P();const u=upcoming().find(x=>x.id===id);if(!u)return;const day=today();
   if(u.kind==='plan')p.plans=p.plans.filter(x=>x.id!==u.id);p.records.push({id:uid(),cat:u.cat,title:u.title,date:day,note:u.note||'',repeat:u.repeat||0,until:u.until||''});
   voice(1);save();render();toast(u.repeat?'Готово ✓ Дальше: '+fmt(addDays(day,u.repeat)):'Готово ✓')}
 function openWeight(){sheet(`<h3>⚖️ Взвешивание · ${esc(P().name)}</h3><div class="two"><div><label>Дата</label><input type="date" id="w-date" value="${today()}"></div><div><label>Вес, кг</label><input type="number" step="0.01" inputmode="decimal" id="w-kg" placeholder="2.4"></div></div><div class="actions"><button class="btn" onclick="saveW()">Сохранить</button></div>`);setTimeout(()=>document.getElementById('w-kg').focus(),250)}
@@ -428,7 +441,7 @@ function petFormSheet(){const d=PF;const f=(k,l,t='text',ph='')=>`<label>${l}</l
   <div class="actions"><button class="btn" onclick="savePet()">Сохранить</button></div>`)}
 const PFK=['name','breed','sex','birth','color','chip','passport','food','allergy','vet','vetPhone','notes'];
 function pfKeep(){if(!document.getElementById('d-name'))return;PFK.forEach(k=>PF[k]=document.getElementById('d-'+k).value.trim())}
-function savePet(){pfKeep();if(!PF.name){toast('Укажите кличку');return}const i=S.pets.findIndex(x=>x.id===PF.id);if(i>=0)S.pets[i]=PF;else S.pets.push(PF);S.current=PF.id;save();closeSheet();render();toast('Сохранено 🐾')}
+function savePet(){pfKeep();if(!PF.name){toast('Укажите кличку');return}const i=S.pets.findIndex(x=>x.id===PF.id);if(i<0)goal('pet_added');if(i>=0)S.pets[i]=PF;else S.pets.push(PF);S.current=PF.id;save();closeSheet();render();toast('Сохранено 🐾')}
 
 /* ============ ФОТО / КОПИЯ / КАЛЕНДАРЬ ============ */
 let photoTarget=null;
@@ -439,7 +452,7 @@ document.getElementById('photoIn').onchange=e=>{const file=e.target.files[0];if(
 async function shareFile(name,text,type){const file=new File([text],name,{type});
   if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:name});return}catch(e){if(e.name==='AbortError')return}}
   const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;document.body.appendChild(a);a.click();a.remove()}
-function backup(){shareFile(`lapki-backup-${today()}.json`,JSON.stringify(S),'application/json')}
+function backup(){goal('backup');shareFile(`lapki-backup-${today()}.json`,JSON.stringify(S),'application/json')}
 document.getElementById('fileIn').onchange=e=>{const file=e.target.files[0];if(!file)return;const rd=new FileReader();
   rd.onload=()=>{try{let o=JSON.parse(rd.result);
     if(o.dog&&o.records){o={pets:[newPet({...o.dog,species:'dog',theme:THEMES[0][1],weights:o.weights||[],records:o.records||[],plans:o.plans||[]})],remindTime:o.remindTime||'10:00'}}// копия из старой версии
@@ -458,7 +471,7 @@ async function openICS(text){
   location.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(text);
 }
 function saveICS(){const t=buildICS();if(t)shareFile(`${P().name}-напоминания.ics`,t,'text/calendar')}
-function exportICS(){const t=buildICS();if(t)openICS(t)}
+function exportICS(){const t=buildICS();if(t){goal('calendar_export');openICS(t)}}
 function buildICS(){const p=P();const up=upcoming(p).filter(u=>u.date>=addDays(today(),-1));if(!up.length){toast('Нет запланированных дел');return null}
   const [hh,mm]=(S.remindTime||'10:00').split(':');const stamp=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
   const e=s=>String(s).replace(/\\/g,'\\\\').replace(/[,;]/g,m=>'\\'+m).replace(/\n/g,'\\n');
