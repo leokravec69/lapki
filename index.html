@@ -141,6 +141,20 @@ svg.chart{width:100%;height:150px}
 .species button.on{border-color:var(--accent);background:var(--soft)}
 .photopick{width:110px;height:110px;border-radius:50%;margin:6px auto;background:#fff;border:3px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--muted);overflow:hidden;text-align:center}
 .photopick img{width:100%;height:100%;object-fit:cover}
+/* install */
+.inst{display:flex;align-items:center;gap:12px;background:var(--ink);color:#fff;border-radius:20px;padding:12px 12px 12px 14px;margin:8px 0 10px;box-shadow:0 6px 18px rgba(60,30,10,.25);cursor:pointer;animation:pop .5s ease}
+@keyframes pop{from{transform:scale(.96);opacity:0}}
+.inst .ie{font-size:28px}.inst b{font-size:16px}.inst .s{color:rgba(255,255,255,.7);font-size:12.5px}
+.inst .ib{background:var(--accent);color:#fff;border-radius:12px;padding:9px 12px;font-weight:800;font-size:14px;white-space:nowrap}
+.onbw .inst{margin:0 0 14px}
+.isteps{counter-reset:s;margin:10px 0}
+.isteps div{counter-increment:s;display:block;position:relative;padding:12px 0 12px 40px;border-bottom:1px solid var(--line);font-size:15.5px;line-height:1.7}
+.isteps div:last-child{border:0}
+.isteps div::before{content:counter(s);position:absolute;left:0;top:12px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1}
+.kbd{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:1px 7px;font-weight:700;white-space:nowrap}
+.arrow{position:fixed;left:50%;bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%);font-size:40px;z-index:25;animation:bounce 1s infinite;display:none}
+.arrow.on{display:block}
+@keyframes bounce{50%{transform:translate(-50%,8px)}}
 </style>
 <!-- Yandex.Metrika -->
 <script>
@@ -259,6 +273,7 @@ let OB={step:0,pet:null};
 function onbV(){
   if(OB.step===0)return `<div class="onbw"><div class="logo">🐾</div><h1>Лапки</h1><p class="lead">Дневник здоровья вашего питомца.<br>Работает без интернета, данные хранятся только у вас.</p>
     <div class="feat"><div><b>💉</b>Прививки и обработки по графику</div><div><b>📅</b>Календарь, как в дневнике цикла</div><div><b>🔔</b>Напоминания в календаре телефона</div><div><b>⚖️</b>Вес, прогулки, заметки</div></div>
+    ${installBanner()}
     <button class="btn" onclick="OB={step:1,pet:newPet()};render()">Добавить питомца</button>
     <button class="btn ghost" style="margin-top:8px" onclick="document.getElementById('fileIn').click()">Восстановить из копии</button><a href="help.html" style="display:block;text-align:center;margin-top:14px;color:var(--accent);font-weight:650;text-decoration:none">📖 Как пользоваться</a></div>`;
   const p=OB.pet;
@@ -278,7 +293,7 @@ function obFinish(){obKeep();if(!OB.pet.name){toast('Как зовут пито�
 /* --- Главная с виджетами --- */
 function homeV(){
   const p=P();const up=upcoming(p);const soon=up.filter(u=>diff(today(),u.date)<=30);
-  return `<div class="card hero"><div class="avatar" onclick="voice(2)">${petIcon(p)}</div>
+  return `${installBanner()}<div class="card hero"><div class="avatar" onclick="voice(2)">${petIcon(p)}</div>
     <div class="grow"><h2>${esc(p.name)}</h2><div class="sub">${esc([SPECIES[p.species].n,p.breed,p.sex].filter(Boolean).join(' · '))}</div>
     <div class="stats">${p.birth?`<span class="pill">🎈 ${age(p.birth)}</span>`:''}<span class="pill" onclick="voice(2)">🔊 ${p.species==='cat'?'Мяу':'Гав'}</span></div></div></div>
   <div class="wgrid">${wNext(p,up)}${wHuman(p)}${wProtect(p)}${wWalks(p)}${wWeight(p)}${wBday(p)}${wTip(p)}</div>
@@ -499,6 +514,38 @@ function updateIcon(){
       g.fillStyle='rgba(255,255,255,.92)';g.beginPath();g.arc(S2-30,S2-30,22,0,7);g.fill();g.font='26px system-ui';g.textAlign='center';g.textBaseline='middle';g.fillText('🐾',S2-30,S2-28);draw()};im.src=p.photo}
   else{g.font='110px system-ui';g.textAlign='center';g.textBaseline='middle';g.fillText(SPECIES[p.species].i,S2/2,S2/2+6);draw()}
 }
+/* ============ УСТАНОВКА НА ЭКРАН ============ */
+const STANDALONE=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+const IN_APP=/Instagram|FBAN|FBAV|Telegram|VKClient|Line\//i.test(navigator.userAgent)||(IOS&&!/Safari/i.test(navigator.userAgent));
+let deferredPrompt=null;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});
+addEventListener('appinstalled',()=>{goal('app_installed');deferredPrompt=null;render()});
+if(STANDALONE){try{if(!localStorage.getItem('lapki-installed')){localStorage.setItem('lapki-installed','1');goal('app_installed')}}catch(e){}}
+function installBanner(){
+  if(STANDALONE)return '';
+  return `<div class="inst" onclick="installApp()"><span class="ie">📲</span><div class="grow"><b>Установить на экран</b><div class="s">Работает без интернета, как обычное приложение</div></div><span class="ib">Установить</span></div>`;
+}
+function installApp(){
+  goal('install_click');
+  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(c=>{if(c.outcome==='accepted')goal('app_installed');deferredPrompt=null;render()}).catch(()=>{});return}
+  const url=location.href.split('#')[0];
+  if(IN_APP){
+    sheet(`<h3>📲 Откройте в браузере</h3><p class="note" style="font-size:15px">Внутри Instagram или Telegram установить приложение нельзя — нужен ${IOS?'Safari':'Chrome'}.</p>
+      <div class="isteps"><div>Нажмите <span class="kbd">⋯</span> или <span class="kbd">⋮</span> вверху экрана</div><div>Выберите «Открыть в ${IOS?'Safari':'браузере'}»</div><div>Снова нажмите «Установить на экран»</div></div>
+      <button class="btn sec" onclick="copyLink('${url}')">Скопировать ссылку</button>`);return}
+  if(IOS){
+    sheet(`<h3>📲 Установка на iPhone</h3>
+      <div class="isteps"><div>Нажмите <span class="kbd">Поделиться <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 1v10M3.5 4.5 7 1l3.5 3.5M2 7.5v7h10v-7"/></svg></span> внизу экрана (на новых iPhone — в меню <span class="kbd">⋯</span>)</div>
+      <div>Прокрутите вниз и выберите <span class="kbd">На экран «Домой»</span></div><div>Нажмите <span class="kbd">Добавить</span> — на экране появится иконка${P()&&P().photo?' с фото '+esc(P().name):''}</div></div>
+      <p class="note">После установки открывайте «Лапки» с иконки — так данные сохраняются надёжнее.</p>
+      <button class="btn" onclick="closeSheet();showArrow()">Понятно, показать где</button>`);return}
+  sheet(`<h3>📲 Установка на ${ANDROID?'Android':'экран'}</h3>
+    <div class="isteps"><div>Нажмите <span class="kbd">⋮</span> в правом верхнем углу Chrome</div><div>Выберите <span class="kbd">Установить приложение</span> или <span class="kbd">Добавить на главный экран</span></div><div>Подтвердите — иконка «Лапки» появится на экране</div></div>
+    <button class="btn" onclick="closeSheet()">Понятно</button>`);
+}
+function showArrow(){let a=document.getElementById('arrow');if(!a){a=document.createElement('div');a.id='arrow';a.className='arrow';a.textContent='⬇️';document.body.appendChild(a)}a.classList.add('on');setTimeout(()=>a.classList.remove('on'),6000)}
+function copyLink(u){try{navigator.clipboard.writeText(u).then(()=>toast('Ссылка скопирована'))}catch(e){toast(u)}}
+
 /* ============ ГАВ / МЯУ ============ */
 let AC;
 function ac(){AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}
