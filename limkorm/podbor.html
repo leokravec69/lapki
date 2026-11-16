@@ -536,5 +536,6 @@ document.getElementById('birth').max=new Date().toISOString().slice(0,10);
 state.pet=null;renderWho();renderSpecies();
 {const m=location.hash.match(/^#pet=(\w+)/);if(m)setTimeout(()=>selectPet(m[1]),200);const q=location.hash.match(/^#sp=(dog|cat)/);if(q)setTimeout(()=>{newPetFlow();pickSpecies(q[1])},200)}
 </script>
+<script>const BUILD='202611162234';setTimeout(()=>{try{fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const BUILD='(\d+)'/);if(m&&m[1]!==BUILD&&!sessionStorage.getItem('bv'+m[1])){sessionStorage.setItem('bv'+m[1],1);location.replace(location.pathname+'?v='+m[1]+location.hash)}}).catch(()=>{})}catch(e){}},1200)</script>
 </body>
 </html>
