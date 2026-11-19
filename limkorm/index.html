@@ -310,6 +310,18 @@ nav .plus svg{width:24px;height:24px;color:#fff}
 .card.due{box-shadow:0 0 0 2px var(--accent)}
 .wrow{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
 .wrow:last-child{border-bottom:0}.wrow small{display:block;color:var(--muted,#8d8292);font-size:12px}.wrow .dlt{font-size:12px;font-weight:700;min-width:52px;text-align:right}
+
+/* --- Новости --- */
+.nwcard{cursor:pointer}
+.nw-h{display:flex;align-items:center;gap:8px;margin-bottom:4px}.nw-h h3{margin:0}
+.nw-cnt{background:#e2574c;color:#fff;font-size:12px;font-weight:800;min-width:22px;height:22px;border-radius:99px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px}
+.nw{padding:10px 0;border-bottom:1px solid var(--line)}.nw:last-of-type{border-bottom:0}
+.card>.nw{padding:0;border:0}
+.nw-top{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.nw-e{font-size:18px}.nw-new{background:var(--green,#5d7a5a);color:#fff;font-weight:700;font-size:11px;padding:2px 8px;border-radius:99px}
+.nw h4{margin:6px 0 0;font-size:16px;line-height:1.3}.nw p{margin:8px 0 10px;font-size:14.5px;line-height:1.5}
+.nw a{font-size:13.5px;font-weight:650;color:var(--accent);text-decoration:none}
+.nw-more{margin-top:8px;font-weight:700;color:var(--accent);font-size:14.5px}
 </style>
 <script>function goal(){}</script>
 </head>
@@ -362,6 +374,36 @@ const TIPS={
   dog:['Мокрый нос — не главный признак здоровья. Важнее аппетит, активность и стул.','Шоколад, виноград, изюм, лук и ксилит опасны для собак.','После прогулки в траве осматривайте подмышки, пах и уши — любимые места клещей.','Когти стучат по полу — пора стричь.','Зубы чистите хотя бы 2–3 раза в неделю специальной пастой для собак.','Норма температуры у собак — 37,5–39 °C.','Взвешивайтесь раз в месяц: у маленьких пород даже 200 г — заметно.','Летом гуляйте утром и вечером: асфальт обжигает лапы.','Собаке нужно около 50 мл воды на кг веса в сутки.','Щенок спит до 18–20 часов в сутки — это нормально.','После прививки — 10–14 дней карантина и без купания.','Перед прививкой нужна обработка от глистов за 10–14 дней.'],
   cat:['Кошки маскируют боль: следите за аппетитом и лотком.','Лилии смертельно опасны для кошек — даже пыльца.','Норма температуры у кошек — 38–39,5 °C.','Кошке нужна вода в нескольких местах — многие пьют мало.','Когтеточка спасает диван и здоровье когтей.','Домашние кошки тоже нуждаются в обработке от паразитов.','Кошка спит 12–16 часов в сутки.','Перед прививкой нужна обработка от глистов за 10–14 дней.']
 };
+/* ============ НОВОСТИ (пока вручную; позже — news.json из GitHub Actions + DeepSeek) ============ */
+const NEWS=[
+ {id:'n2611-01',sp:'dog',d:'2026-11-17',e:'🏆',t:'«Евразия 2026»: 10 тысяч собак и два главных кубка',x:'14–15 ноября в «Крокус Экспо» прошла одна из крупнейших выставок собак в России: 276 пород, участники из 49 стран. Кубок Президента РКФ взял малый вандейский бассет-гриффон, Кубок СНГ — немецкий боксёр. В этом году РКФ исполнилось 35 лет, а 2026-й объявлен годом русского охотничьего спаниеля.',src:'Радио 1',u:'https://radio1.ru/news/obschestvo/v-krokus-ekspo-zavershilas-mezhdunarodnaya-vistavka-sobak-evraziya-2026/'},
+ {id:'n2611-02',sp:'dog',d:'2026-11-17',e:'🐩',t:'Шпицы и пудели обогнали хаски и овчарок',x:'В конце 2026 года россияне чаще всего покупают компактных собак. Лидер — померанский шпиц, пудель переживает «второе рождение» за ум и шерсть, которая почти не линяет, а вельш-корги вошёл в тройку самых популярных пород по данным РКФ.',src:'URA.RU',u:'https://ura.news/articles/1053144924'},
+ {id:'n2611-03',sp:'dog',d:'2026-11-18',e:'🤖',t:'Нейросеть понимает, что собака устала, — по её морде',x:'Учёные из Хайфского университета научили ИИ замечать усталость у служебных собак по обычному видео со смартфона. Система следит за 46 точками вокруг глаз, ушей, носа и пасти. В будущем такие технологии могут подсказывать хозяевам, что питомцу пора отдохнуть.',src:'ZME Science',u:'https://www.zmescience.com/ecology/animals-ecology/scientists-taught-ai-to-recognize-a-tired-dog-by-looking-at-its-face/'},
+ {id:'n2611-04',sp:'dog',d:'2026-11-16',e:'🧠',t:'Собаку не обманешь: она замечает, когда вы улыбаетесь, но сердитесь',x:'Японские исследователи надели на трёх собак шапочки для записи мозговой активности и показывали им фото хозяина вместе с его голосом. Когда весёлое лицо сочеталось с сердитым тоном, мозг собак реагировал сильнее. Исследование пока маленькое, но очень трогательное.',src:'Barkley & Paws',u:'https://www.barkleyandpaws.com/trending/daily-dog-digest-monday-november-16-2026/'},
+ {id:'n2611-05',sp:'dog',d:'2026-11-04',e:'🌿',t:'Собаки-сыщики нашли сорные растения с точностью 75%',x:'В Германии 31 собака вместе с хозяевами-волонтёрами училась искать по запаху опасные инвазивные растения. В полевых испытаниях команды «человек + собака» находили цель в трёх случаях из четырёх. Отличная работа для активного пса!',src:'Phys.org',u:'https://phys.org/news/2026-11-dogs-invasive-species-germany-accuracy.html'},
+ {id:'n2611-06',sp:'dog',d:'2026-11-18',e:'🥣',t:'Беззерновой корм и сердце собаки: новые данные',x:'Крупный проект Dog Aging Project проанализировал наблюдения владельцев за два года и не нашёл связи между беззерновыми кормами и новыми диагнозами сердца. Вопрос ещё изучается, поэтому корм с особыми условиями лучше обсуждать с ветеринаром.',src:'Dog Aging Project',u:'https://dogagingproject.org/'},
+ {id:'n2611-07',sp:'cat',d:'2026-11-11',e:'😼',t:'Кошка мяукает, чтобы вы всё исправили',x:'Бразильские учёные создавали 38 домашним кошкам маленькую «проблему» и смотрели, что будет. Если рядом был внимательный человек, кошки мяукали примерно в четыре раза чаще, чем в одиночестве. Вывод: мяуканье — это обращение лично к вам.',src:'ScienceAlert',u:'https://www.sciencealert.com/science-has-finally-shown-that-your-cat-meows-to-demand-that-you-fix-their-world'},
+ {id:'n2611-08',sp:'cat',d:'2026-11-05',e:'💞',t:'У кошки и хозяина «гормон любви» работает синхронно',x:'Исследование в журнале iScience показало: уровень окситоцина у людей и их кошек поднимается и падает вместе. Раньше такую связь находили только у собак — теперь и у кошек.',src:'VICE',u:'https://www.vice.com/en/article/scientists-discovered-a-surprising-chemical-connection-between-cats-and-their-owners/'},
+ {id:'n2611-09',sp:'cat',d:'2026-10-30',e:'🤗',t:'Чем чаще кошка рядом — тем лучше настроение хозяина',x:'Японские учёные повесили кошкам на ошейники крошечные датчики и измерили, сколько времени они проводят рядом с хозяевами. Те, к кому кошка приходила чаще, отмечали более хорошее настроение. Важны не годы вместе, а ежедневная близость.',src:'Progressive Charlestown',u:'https://www.progressive-charlestown.com/2026/10/scientists-find-that-cats-and-their.html'},
+ {id:'n2611-10',sp:'cat',d:'2026-11-18',e:'📈',t:'«Котономика»: кошки — главная статья расходов на питомцев',x:'Мировой рынок всего, что связано с кошками, превысил 100 млрд евро. На кошек приходится 38,5% всех трат на домашних животных — больше, чем на любых других питомцев. В Японии это явление даже назвали «некономикой».',src:'ПРАЙМ',u:'https://1prime.ru/20261118/koshki-875337517.html'}
+];
+const newsFor=sp=>NEWS.filter(n=>sp==='all'||n.sp===sp||n.sp==='all').sort((a,b)=>b.d.localeCompare(a.d));
+const newsUnseen=sp=>newsFor(sp).filter(n=>!(S.newsSeen||[]).includes(n.id)).length;
+let newsSp=null;
+function newsItem(n,short){return `<article class="nw"><div class="nw-top"><span class="nw-e">${n.e}</span><span class="nw-d">${fmt(n.d)}</span>${(S.newsSeen||[]).includes(n.id)?'':'<span class="nw-new">новое</span>'}</div>
+  <h4>${esc(n.t)}</h4>${short?'':`<p>${esc(n.x)}</p><a href="${n.u}" target="_blank" rel="noopener" onclick="goal('news_src')">Источник: ${esc(n.src)} ›</a>`}</article>`}
+function wNews(p){const list=newsFor(p.species).slice(0,2);if(!list.length)return'';const u=newsUnseen(p.species);
+  return `<div class="card nwcard" onclick="openNews()"><div class="nw-h"><h3>Новости мира ${p.species==='cat'?'кошек':'собак'}</h3>${u?`<span class="nw-cnt">${u}</span>`:''}</div>
+  ${list.map(n=>newsItem(n,true)).join('')}<div class="nw-more">Все новости ›</div></div>`}
+function openNews(){newsSp=P().species;tab='news';render();scrollTo(0,0)}
+function newsV(){const sp=newsSp||P().species;const list=newsFor(sp);
+  const html=`<div class="card" style="padding:16px 16px 12px"><h2 style="font-size:22px;margin:0 0 4px">Новости 🐾</h2><p class="note" style="margin:0 0 12px">Что произошло в мире собак и кошек. Обновляем каждый день.</p>
+    <div class="cats">${[['dog','🐶 Собаки'],['cat','🐱 Кошки'],['all','Все']].map(([k,l])=>`<button class="${sp===k?'on':''}" onclick="newsSp='${k}';render()">${l}</button>`).join('')}</div></div>
+  ${list.map(n=>`<div class="card">${newsItem(n)}</div>`).join('')||'<div class="card"><div class="empty">Новостей пока нет.</div></div>'}
+  <p class="note" style="text-align:center;padding:4px 16px">Новости — короткий пересказ, подробности по ссылке на источник.</p>
+  <button class="btn ghost" onclick="tab='home';render()">← На главную</button>`;
+  S.newsSeen=[...new Set([...(S.newsSeen||[]),...list.map(n=>n.id)])];save();
+  return html}
 const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const ANDROID=/Android/i.test(navigator.userAgent);
 /* ============ ДАННЫЕ ============ */
@@ -420,7 +462,7 @@ function render(){
   applyTheme();updateIcon();
   document.getElementById('pets').innerHTML=S.pets.map(p=>`<button class="pet ${p.id===P().id?'on':''}" onclick="switchPet('${p.id}')"><span class="mini">${ICO2[p.species]||ICO2.dog}</span>${esc(p.name)}</button>`).join('')+`<button class="addpet" onclick="openPetForm()">＋</button>`;
   document.querySelectorAll('nav button[data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));document.body.classList.toggle('t-home',tab==='home');
-  document.getElementById('view').innerHTML={home:homeV,cal:calV,log:logV,pet:petV,food:foodV}[tab]();
+  document.getElementById('view').innerHTML={home:homeV,cal:calV,log:logV,pet:petV,food:foodV,news:newsV}[tab]();
 }
 function switchPet(id){S.current=id;save();render();window.scrollTo(0,0)}
 
@@ -458,6 +500,7 @@ function homeV(){
   <div class="seg">${S.pets.map(x=>`<button class="pet ${x.id===p.id?'on':''}" onclick="switchPet('${x.id}')"><span class="mini">${ICO2[x.species]||ICO2.dog}</span>${esc(x.name)}</button>`).join('')}<button class="addpet" onclick="openPetForm()">＋</button></div>
   ${dueCard(up)}
   ${wFood(p)}
+  ${wNews(p)}
   ${installBanner()}
   <div class="wgrid">${wNext(p,up)}${wHuman(p)}${wProtect(p)}${wWalks(p)}${wWeight(p)}${wBday(p)}${wTip(p)}</div>
   <div class="moon"><div class="stars"></div><div class="orb"></div><span class="soon">Скоро</span><h3>Лунный календарь</h3><p>Гороскоп по возрасту, полу и породе, фазы Луны и совет на каждый день.</p></div>
